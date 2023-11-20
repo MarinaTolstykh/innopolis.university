@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="navBarMain">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" id="navBasicLink" href="#">Модель</a>
+              </li>
+            <li class="nav-item">
+              <a class="nav-link" id="navReseachLink" href="#">Исследование</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="container-fluid">
+        <p class="lead">
+            Для взаимодействия с моделью введите в поля ниже значения для предсказания. После этого нажмите отправить. 
+            Если поле пусто - будет передано "пропущенное" значение, модель умеет их обрабатывать.
+        </p>
+        <p class="lead">
+            Помимо этого можно нажать "взять из базы" - будет подставлены случайные данные из текущей обучающей базы.
+        </p>
+        <p class="lead">
+            После предсказания возможно либо отправить в систему метку (для расширения обучающей базы: верно или не верно распознано), 
+            либо просто разблокировать ввод для дальнейших экспериментов (без сохранения в базу).
+        </p>
+
+        <div class="row">
+            <div class="col-2">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="phHeader">ph</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="5.0" id="phInput" aria-describedby="phHeader">
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="hardnessHeader">Hardness</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="100.0" id="hardnessInput" aria-describedby="hardnessHeader">
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="solidsHeader">Solids</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="28000.0" id="solidsInput" aria-describedby="solidsHeader">
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="chloraminesHeader">Chloramines</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="7.22" id="chloraminesInput" aria-describedby="chloraminesHeader">
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="sulfateHeader">Sulfate</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="342.60" id="sulfateInput" aria-describedby="sulfateHeader">
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="conductivityHeader">Conductivity</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="341.74" id="conductivityInput" aria-describedby="conductivityHeader">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-2">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="organicCarbonHeader">Organic carbon</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="9.00" id="organicCarbonInput" aria-describedby="organicCarbonHeader">
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="trihalomethanesHeader">Trihalomethanes</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="60.72" id="trihalomethanesInput" aria-describedby="trihalomethanesHeader">
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="turbidityHeader">Turbidity</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="2.16" id="turbidityInput" aria-describedby="turbidityHeader">
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col d-flex justify-content-center">
+                <button type="button" class="btn btn-secondary" id="getFromBdButton" style="margin-right: 10px;" onclick="getTrainSample()">Взять из базы</button>
+                <button type="button" class="btn btn-primary" id="predictButton" onclick="predict()">Предсказать</button>
+            </div>
+        </div>
+        
+
+        <div class="row" style="margin-top: 50px;">
+            <div class="col d-flex justify-content-center">
+                <h1 class="display-4" id="result">Результат: </h1>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 20px;">
+            <div class="col d-flex justify-content-center">
+                <button type="button" class="btn btn-secondary" style="margin-right: 10px;" id="unlockButton" onclick="unlock()">Разблокировать ввод</button>
+                <button type="button" class="btn btn-danger" style="margin-right: 10px;" id="wrongButton" onclick="sendAnswer(false)">Не верно!</button>
+                <button type="button" class="btn btn-success" onclick="sendAnswer(true)" id="trueButton">Верно!</button>
+            </div>
+        </div>
+        
+    </div>
+
+    
+
+  </body>
+</html>

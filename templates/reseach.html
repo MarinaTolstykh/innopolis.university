@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="{{ url_for('static', filename='reseach.js') }}"></script>
+
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" id="navBarMain">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" id="navBasicLink" href="#">Модель</a>
+              </li>
+            <li class="nav-item">
+              <a class="nav-link" id="navReseachLink" href="#">Исследование</a>
+            </li>
+        </ul>
+    </nav>
+
+
+    <embed src="{{ url_for('static', filename='reseach.pdf') }}" id="reseachViewer" width="500" height="375" type="application/pdf">
+
+
+  </body>
+</html>
